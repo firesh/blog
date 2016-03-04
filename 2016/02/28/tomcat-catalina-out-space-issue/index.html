@@ -1,0 +1,375 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Linux下tomcat日志文件catalina占用空间过大导致空间不足的问题解决办法 | 王少波的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="王少波">
+    
+    <meta name="description" content="最近代码写的好多，切换一下状态，把这个2月28日的草稿文章完成吧。生产环境的磁盘空间满了，可以说是要爆了。du -sh * 查询，发现tomcat的catalina.out这个日志太大了，这个文件tomcat控制台log输出文件。 怎么处理？">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="王少波的博客" title="王少波的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="王少波的博客">王少波的博客</a></h1>
+				<h2 class="blog-motto">程序员-&gt;通讯工程师-&gt;[全栈工程师]</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:blog.bo.run">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/02/28/tomcat-catalina-out-space-issue/" title="Linux下tomcat日志文件catalina占用空间过大导致空间不足的问题解决办法" itemprop="url">Linux下tomcat日志文件catalina占用空间过大导致空间不足的问题解决办法</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.bo.run" title="王少波">王少波</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-02-28T04:10:33.000Z" itemprop="datePublished">2016-02-28</time>
+    更新日期:<time datetime="2016-03-04T05:51:04.000Z" itemprop="dateModified">2016-03-04</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#方法一：手动删除"><span class="toc-number">1.</span> <span class="toc-text">方法一：手动删除</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法二：改脚本catalina-sh"><span class="toc-number">2.</span> <span class="toc-text">方法二：改脚本catalina.sh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法三：分割工具cronolog"><span class="toc-number">3.</span> <span class="toc-text">方法三：分割工具cronolog</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法四：使用linux自带的logrotate"><span class="toc-number">4.</span> <span class="toc-text">方法四：使用linux自带的logrotate</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何每天或者当它大于5M，自动切换catalina-out-文件"><span class="toc-number">4.1.</span> <span class="toc-text">如何每天或者当它大于5M，自动切换catalina.out 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#他是如何工作的"><span class="toc-number">4.2.</span> <span class="toc-text">他是如何工作的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#手动运行logrotate"><span class="toc-number">4.3.</span> <span class="toc-text">手动运行logrotate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更多的logrotate选项"><span class="toc-number">4.4.</span> <span class="toc-text">更多的logrotate选项</span></a></li></ol></li></ol>
+		</div>
+		
+		<p>最近代码写的好多，切换一下状态，把这个2月28日的草稿文章完成吧。<br>生产环境的磁盘空间满了，可以说是要爆了。<br>du -sh * 查询，发现tomcat的catalina.out这个日志太大了，这个文件tomcat控制台log输出文件。 怎么处理？<br><a id="more"></a></p>
+<h2 id="方法一：手动删除"><a href="#方法一：手动删除" class="headerlink" title="方法一：手动删除"></a>方法一：手动删除</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm catalina.out&#10;touch catalina.out</span><br></pre></td></tr></table></figure>
+<p>再查询一下磁盘空间，居然没有释放。 究其原因，主要是这个文件被tomcat打开状态，即使删除了，空间不会马上释放，这是linux的一些机制。重启tomcat，空间得到释放。<br>如果不想重启，怎么办？ 有办法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &#34; &#34; &#62; catalina.out</span><br></pre></td></tr></table></figure></p>
+<p>缺点：需要手动定期执行。</p>
+<h2 id="方法二：改脚本catalina-sh"><a href="#方法二：改脚本catalina-sh" class="headerlink" title="方法二：改脚本catalina.sh"></a>方法二：改脚本catalina.sh</h2><p>网上一大把介绍，难度高，不做推荐</p>
+<h2 id="方法三：分割工具cronolog"><a href="#方法三：分割工具cronolog" class="headerlink" title="方法三：分割工具cronolog"></a>方法三：分割工具cronolog</h2><p>用这个工具更麻烦，安装工具，改catalina.sh脚本，还要重启服务。<br>参考： <a href="http://baalwolf.iteye.com/blog/1507454" target="_blank" rel="external">http://baalwolf.iteye.com/blog/1507454</a></p>
+<h2 id="方法四：使用linux自带的logrotate"><a href="#方法四：使用linux自带的logrotate" class="headerlink" title="方法四：使用linux自带的logrotate"></a>方法四：使用linux自带的logrotate</h2><p>可是，我偏偏是一个最(爱)求(瞎)完(折)美(腾)的人，最终在google上找到一个比较完美且简单的方案。<br>是英文的，文章为10年，但是在国内很少看到有人介绍次方案，在此翻译供中文用户参考。</p>
+<blockquote>
+<p>原文： <a href="https://dzone.com/articles/how-rotate-tomcat-catalinaout" target="_blank" rel="external">https://dzone.com/articles/how-rotate-tomcat-catalinaout</a></p>
+</blockquote>
+<p>如果catalina.out增长到2GB， tomcat会挂掉，并且启动失败还没有错误消息。为了避免这种情况，你需要频繁的切换 catalina.out文件。这篇文章描述如何在linux/unix机器上设置好自动切换catalina.out文件。</p>
+<h3 id="如何每天或者当它大于5M，自动切换catalina-out-文件"><a href="#如何每天或者当它大于5M，自动切换catalina-out-文件" class="headerlink" title="如何每天或者当它大于5M，自动切换catalina.out 文件"></a>如何每天或者当它大于5M，自动切换catalina.out 文件</h3><ol>
+<li><p>创建文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/logrotate.d/tomcat</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拷贝一下内容到上面这个文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/share/apache-tomcat-8/logs/catalina.out &#123;&#10;&#9;copytruncate&#10;&#9;daily&#10;&#9;rotate 7&#10;&#9;compress&#10;&#9;missingok&#10;&#9;size 5M&#10;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>上面这个文件配置：</p>
+<ul>
+<li>确定 /usr/share/apache-tomcat-8/logs/catalina.out 就是你的tomcat的catalina.out路径</li>
+<li><strong>daily</strong> - 每天切换 catalina.out</li>
+<li><strong>rotate</strong> - 保持最多7个日志文件</li>
+<li><strong>compress</strong> - 对切换出来的日志文件压缩</li>
+<li><strong>size</strong> - 如果catalina.out文件大于5M，执行切换操作</li>
+</ul>
+<p><strong>别的不用操作了。:)</strong></p>
+<h3 id="他是如何工作的"><a href="#他是如何工作的" class="headerlink" title="他是如何工作的"></a>他是如何工作的</h3><ol>
+<li>每晚cron后台执行<code>/etc/cron.daily/</code>目录下的任务</li>
+<li>这会触发<code>/etc/cron.daily/logrotate</code>文件，通常这在linux安装的时候包含了。 它会执行命令 <code>/etc/cron.daily/logrotate</code></li>
+<li><code>/etc/logrotate.conf</code> 这个配置文件包含了所有在 <code>/etc/logrotate.d/</code> 的脚本。<br>4。 这会触发我们之前写的 <code>/etc/logrotate.d/tomcat</code> 文件。</li>
+</ol>
+<h3 id="手动运行logrotate"><a href="#手动运行logrotate" class="headerlink" title="手动运行logrotate"></a>手动运行logrotate</h3><p>执行以下命令可以手动运行定时任务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/logrotate /etc/logrotate.conf</span><br></pre></td></tr></table></figure></p>
+<h3 id="更多的logrotate选项"><a href="#更多的logrotate选项" class="headerlink" title="更多的logrotate选项"></a>更多的logrotate选项</h3><p>要看到你系统上所有的logrotate选项，查看手册：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man logrotate</span><br></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Linux/">Linux</a><a href="/tags/Tomcat/">Tomcat</a><a href="/tags/catalina-out/">catalina.out</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/技术分享/">技术分享</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.bo.run/2016/02/28/tomcat-catalina-out-space-issue/" data-title="Linux下tomcat日志文件catalina占用空间过大导致空间不足的问题解决办法 | 王少波的博客" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2016/02/28/hello-world/"  title="Hello World! 开博客了">
+ <strong>NEXT:</strong><br/> 
+ <span>Hello World! 开博客了
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#方法一：手动删除"><span class="toc-number">1.</span> <span class="toc-text">方法一：手动删除</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法二：改脚本catalina-sh"><span class="toc-number">2.</span> <span class="toc-text">方法二：改脚本catalina.sh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法三：分割工具cronolog"><span class="toc-number">3.</span> <span class="toc-text">方法三：分割工具cronolog</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法四：使用linux自带的logrotate"><span class="toc-number">4.</span> <span class="toc-text">方法四：使用linux自带的logrotate</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何每天或者当它大于5M，自动切换catalina-out-文件"><span class="toc-number">4.1.</span> <span class="toc-text">如何每天或者当它大于5M，自动切换catalina.out 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#他是如何工作的"><span class="toc-number">4.2.</span> <span class="toc-text">他是如何工作的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#手动运行logrotate"><span class="toc-number">4.3.</span> <span class="toc-text">手动运行logrotate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更多的logrotate选项"><span class="toc-number">4.4.</span> <span class="toc-text">更多的logrotate选项</span></a></li></ol></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/技术分享/" title="技术分享">技术分享<sup>1</sup></a></li>
+		
+			<li><a href="/categories/随便记/" title="随便记">随便记<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/CNAME/" title="CNAME">CNAME<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Git/" title="Git">Git<sup>1</sup></a></li>
+		
+			<li><a href="/tags/GitHub/" title="GitHub">GitHub<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Linux/" title="Linux">Linux<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>1</sup></a></li>
+		
+			<li><a href="/tags/catalina-out/" title="catalina.out">catalina.out<sup>1</sup></a></li>
+		
+			<li><a href="/tags/全栈/" title="全栈">全栈<sup>1</sup></a></li>
+		
+			<li><a href="/tags/全栈工程师/" title="全栈工程师">全栈工程师<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		<a href="https://github.com/firesh" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.bo.run" target="_blank" title="王少波">王少波</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"firesh"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>
