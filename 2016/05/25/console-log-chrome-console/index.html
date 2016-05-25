@@ -1,0 +1,428 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>不仅仅是console.log,前端应该都学的 -- Chrome控制台console的用法 | 王少波的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="王少波">
+    
+    <meta name="description" content="Chrome 控制台console的用法大家都有用过各种类型的浏览器，每种浏览器都有自己的特色，本人拙见，在我用过的浏览器当中，我是最喜欢Chrome的，因为它对于调试脚本及前端设计调试都有它比其它浏览器有过之而无不及的地方。可能大家对console.log会有一定的了解，心里难免会想调试的时候用a">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=54793993" charset="UTF-8"></script>
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="王少波的博客" title="王少波的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="王少波的博客">王少波的博客</a></h1>
+				<h2 class="blog-motto">程序员-&gt;通讯工程师-&gt;[全栈工程师]</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:blog.bo.run">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/05/25/console-log-chrome-console/" title="不仅仅是console.log,前端应该都学的 -- Chrome控制台console的用法" itemprop="url">不仅仅是console.log,前端应该都学的 -- Chrome控制台console的用法</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.bo.run" title="王少波">王少波</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-05-25T04:08:33.000Z" itemprop="datePublished">2016-05-25</time>
+    更新日期:<time datetime="2016-05-25T02:28:03.000Z" itemprop="dateModified">2016-05-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chrome-控制台console的用法"><span class="toc-number">1.</span> <span class="toc-text">Chrome 控制台console的用法</span></a></li></ol>
+		</div>
+		
+		<h1 id="Chrome-控制台console的用法"><a href="#Chrome-控制台console的用法" class="headerlink" title="Chrome 控制台console的用法"></a><a href="http://www.cnblogs.com/ctriphire/p/4116207.html" target="_blank" rel="external">Chrome 控制台console的用法</a></h1><p>大家都有用过各种类型的浏览器，每种浏览器都有自己的特色，本人拙见，在我用过的浏览器当中，我是最喜欢Chrome的，因为它对于调试脚本及前端设计调试都有它比其它浏览器有过之而无不及的地方。可能大家对console.log会有一定的了解，心里难免会想调试的时候用alert不就行了，干嘛还要用console.log这么一长串的字符串来替代alert输出信息呢，下面我就介绍一些调试的入门技巧，让你爱上console.log</p>
+<p>先的简单介绍一下chrome的控制台，打开chrome浏览器，按f12就可以轻松的打开控制台</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230844086569404.png" alt=""></p>
+<p>大家可以看到控制台里面有一首诗还有其它信息，如果想清空控制台，可以点击左上角那个<img src="http://images.cnitblog.com/blog/457824/201411/230851146562060.png" alt="">来清空，当然也可以通过在控制台输入console.clear()来实现清空控制台信息。如下图所示<sub><sup><br></sup></sub></p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230852535785272.png" alt=""></p>
+<p>现在假设一个场景，如果一个数组里面有成百上千的元素，但是你想知道每个元素具体的值，这时候想想如果你用alert那将是多惨的一件事情，因为alert阻断线程运行，你不点击alert框的确定按钮下一个alert就不会出现。</p>
+<p>下面我们用console.log来替换，感受一下它的魅力。</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230901063434461.png" alt=""></p>
+<p>看了上面这张图，是不是认识到log的强大之处了，下面我们来看看console里面具体提供了哪些方法可以供我们平时调试时使用。</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230907017034998.jpg" alt=""></p>
+<p>目前控制台方法和属性有：</p>
+<pre class="hljs javascript">**[<span class="hljs-string">"$$", <span class="hljs-string">"$x", <span class="hljs-string">"dir", <span class="hljs-string">"dirxml", <span class="hljs-string">"keys", <span class="hljs-string">"values", <span class="hljs-string">"profile", <span class="hljs-string">"profileEnd", <span class="hljs-string">"monitorEvents", <span class="hljs-string">"unmonitorEvents", <span class="hljs-string">"inspect", <span class="hljs-string">"copy", <span class="hljs-string">"clear", <span class="hljs-string">"getEventListeners", <span class="hljs-string">"undebug", <span class="hljs-string">"monitor", <span class="hljs-string">"unmonitor", <span class="hljs-string">"table", <span class="hljs-string">"$0", <span class="hljs-string">"$1", <span class="hljs-string">"$2", <span class="hljs-string">"$3", <span class="hljs-string">"$4", <span class="hljs-string">"$_"]</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>**</pre>
+
+<p>下面我们来一一介绍一下各个方法主要的用途。</p>
+<p>一般情况下我们用来输入信息的方法主要是用到如下四个</p>
+<p><strong>1、console.log</strong>&nbsp;用于输出普通信息</p>
+<p><strong>2、console.info&nbsp;</strong>用于输出提示性信息</p>
+<p><strong>3、console.error</strong>用于输出错误信息</p>
+<p><strong>4、console.warn</strong>用于输出警示信息</p>
+<p>用图来说话</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230913067037155.jpg" alt=""></p>
+<p><strong>5、console.group</strong>输出一组信息的开头</p>
+<p><strong>6、console.groupEnd</strong>结束一组输出信息</p>
+<p>看你需求选择不同的输出方法来使用，如果上述四个方法再配合group和groupEnd方法来一起使用就可以输入各种各样的不同形式的输出信息。</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230916203758554.jpg" alt=""></p>
+<p>哈哈，是不是觉得很神奇呀！</p>
+<p><strong>7、console.assert</strong>对输入的表达式进行断言，只有表达式为false时，才输出相应的信息到控制台</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230920471094898.jpg" alt=""></p>
+<p><strong>8、console.count</strong>（这个方法非常实用哦）当你想统计代码被执行的次数</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230922575009930.jpg" alt=""></p>
+<p><strong>9、console.dir</strong>(这个方法是我经常使用的 可不知道比for in方便了多少)&nbsp;直接将该DOM结点以DOM树的结构进行输出，可以详细查对象的方法发展等等</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230936046711444.jpg" alt=""></p>
+<p><strong>10、console.time&nbsp;</strong>计时开始</p>
+<p><strong>11、console.timeEnd</strong>&nbsp;&nbsp;计时结束（看了下面的图你瞬间就感受到它的厉害了）</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230941441714991.jpg" alt=""></p>
+<p><strong>12、console.profile</strong>和<strong>console.profileEnd</strong>配合一起使用来查看CPU使用相关信息</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230947391254586.jpg" alt=""></p>
+<p>在Profiles面板里面查看就可以看到cpu相关使用信息</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230948160786229.jpg" alt=""></p>
+<p><strong>13、console.timeLine</strong>和<strong>console.timeLineEnd</strong>配合一起记录一段时间轴</p>
+<p><strong>14、console.trace</strong>&nbsp;&nbsp;堆栈跟踪相关的调试</p>
+<p>上述方法只是我个人理解罢了。如果想查看具体API，可以上官方看看，具体地址为：<a href="https://developer.chrome.com/devtools/docs/console-api" target="_blank" rel="external">https://developer.chrome.com/devtools/docs/console-api</a></p>
+<p>&nbsp;</p>
+<p>下面介绍一下控制台的一些快捷键</p>
+<p><strong>1、方向键盘的上下键</strong>，大家一用就知晓。比如用上键就相当于使用上次在控制台的输入符号</p>
+<p><strong>2、$_</strong>命令返回最近一次表达式执行的结果，功能跟按向上的方向键再回车是一样的</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/230958084845245.jpg" alt=""></p>
+<p>上面的<code>$_</code>需要领悟其奥义才能使用得当，而<span class="MathJax_Preview"><span id="MathJax-Element-1-Frame" class="MathJax"><span id="MathJax-Span-1" class="math"><span id="MathJax-Span-2" class="mrow"><span id="MathJax-Span-3" class="mn">0<span id="MathJax-Span-4" class="mtext">&nbsp;</span></span></span></span>4则代表了最近5个你选择过的DOM节点。</span></span></p>
+<p>什么意思？在页面右击选择<code>审查元素</code>，然后在弹出来的DOM结点树上面随便点选，这些被点过的节点会被记录下来，而<code>$0</code>会返回最近一次点选的DOM结点，以此类推，$1返回的是上上次点选的DOM节点，最多保存了5个，如果不够5个，则返回<code>undefined</code>。</p>
+<p><img src="http://images.cnitblog.com/blog/431064/201409/132239377465002.gif" alt=""></p>
+<p><strong>3、Chrome 控制台中原生支持类jQuery的选择器</strong>，也就是说你可以用<code>$</code>加上熟悉的css选择器来选择DOM节点</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231001310469893.jpg" alt=""></p>
+<p><strong>4、copy</strong>通过此命令可以将在控制台获取到的内容复制到剪贴板</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231004464535964.jpg" alt=""></p>
+<p>（哈哈 刚刚从控制台复制的body里面的html可以任意粘贴到哪 比如记事本 &nbsp;是不是觉得功能很强大）</p>
+<p><strong>5、keys和values</strong>&nbsp;前者返回传入对象所有属性名组成的数据，后者返回所有属性值组成的数组</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231008342653765.jpg" alt=""></p>
+<p>说到这，不免想起<strong>console.table</strong>方法了</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231012102186590.jpg" alt=""></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>6、monitor &amp; unmonitor</strong></p>
+<p>monitor(function)，它接收一个函数名作为参数，比如<code>function a</code>,每次<code>a</code>被执行了，都会在控制台输出一条信息，里面包含了函数的名称<code>a</code>及执行时所传入的参数。</p>
+<p>而unmonitor(function)便是用来停止这一监听。</p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231015303594113.jpg" alt=""></p>
+<p>看了这张图，应该明白了，也就是说在monitor和unmonitor中间的代码，执行的时候会在控制台输出一条信息，里面包含了函数的名称<code>a</code>及执行时所传入的参数。当解除监视（也就是执行unmonitor时）就不再在控制台输出信息了。</p>
+<pre class="hljs javascript">**$ <span class="hljs-comment">// 简单理解就是 document.querySelector 而已。
+$$ <span class="hljs-comment">// 简单理解就是 document.querySelectorAll 而已。
+$_ <span class="hljs-comment">// 是上一个表达式的值
+$<span class="hljs-number">0-$<span class="hljs-number">4 <span class="hljs-comment">// 是最近5个Elements面板选中的DOM元素，待会会讲。
+dir <span class="hljs-comment">// 其实就是 console.dir
+keys <span class="hljs-comment">// 取对象的键名, 返回键名组成的数组
+values <span class="hljs-comment">// 去对象的值, 返回值组成的数组</span></span></span></span></span></span></span></span></span>**</pre>
+
+<p>&nbsp;</p>
+<p>下面看一下console.log的一些技巧</p>
+<p><strong>1、重写console.log 改变输出文字的样式</strong></p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231020045932166.png" alt=""></p>
+<p><strong>2、利用控制台输出图片</strong></p>
+<p><img src="http://images.cnitblog.com/blog/431064/201409/132234240277278.gif" alt=""></p>
+<p><strong>3、指定输出文字的样式</strong></p>
+<p><img src="http://images.cnitblog.com/blog/457824/201411/231028494216061.png" alt=""></p>
+<p>&nbsp;最后说一下chrome控制台一个简单的操作，如何查看页面元素，看下图就知道了</p>
+<p><img src="http://images.cnitblog.com/i/477954/201406/161255380974581.jpg" alt=""></p>
+<p>你在控制台简单操作一遍就知道了，是不是觉得很简单！</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Linux/">Linux</a><a href="/tags/Tomcat/">Tomcat</a><a href="/tags/catalina-out/">catalina.out</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/技术分享/">技术分享</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.bo.run/2016/05/25/console-log-chrome-console/" data-title="不仅仅是console.log,前端应该都学的 -- Chrome控制台console的用法 | 王少波的博客" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2016/03/04/tomcat-catalina-out-space-issue/"  title="Linux下tomcat日志文件catalina占用空间过大导致空间不足的问题解决办法">
+ <strong>NEXT:</strong><br/> 
+ <span>Linux下tomcat日志文件catalina占用空间过大导致空间不足的问题解决办法
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chrome-控制台console的用法"><span class="toc-number">1.</span> <span class="toc-text">Chrome 控制台console的用法</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/技术分享/" title="技术分享">技术分享<sup>2</sup></a></li>
+		
+			<li><a href="/categories/随便记/" title="随便记">随便记<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/CNAME/" title="CNAME">CNAME<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Git/" title="Git">Git<sup>1</sup></a></li>
+		
+			<li><a href="/tags/GitHub/" title="GitHub">GitHub<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Linux/" title="Linux">Linux<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+		
+			<li><a href="/tags/catalina-out/" title="catalina.out">catalina.out<sup>2</sup></a></li>
+		
+			<li><a href="/tags/全栈/" title="全栈">全栈<sup>1</sup></a></li>
+		
+			<li><a href="/tags/全栈工程师/" title="全栈工程师">全栈工程师<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		<a href="https://github.com/firesh" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.bo.run" target="_blank" title="王少波">王少波</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"firesh"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>
